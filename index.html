@@ -216,13 +216,15 @@
                     </div>
                     <div id="outfitSection" class="space-y-1.5"></div>
                     
-                    <!-- 朝・昼・夜の気温＆服装タイムライン -->
-                    <div class="bg-[#1c1c1e]/80 rounded-xl p-2.5 border border-[#3a3a3c] space-y-1.5 mt-2">
-                        <div class="text-[14px] font-bold text-[#8e8e93] flex items-center justify-between">
-                            <span>🕒 朝・昼・夜の寒暖差対策</span>
-                            <span class="text-[14px] font-normal text-[#636366]">気温推移目安</span>
+                    <!-- 朝・昼・夜の気温＆服装タイムライン（レイアウト改善版） -->
+                    <div class="bg-[#1c1c1e]/85 rounded-xl p-2.5 border border-[#3a3a3c] space-y-2 mt-2">
+                        <div class="flex items-center justify-between text-[12pt] px-0.5">
+                            <span class="font-bold text-[#ff9500] flex items-center gap-1">
+                                <span>🕒</span>
+                                <span>朝・昼・夜の寒暖差対策</span>
+                            </span>
                         </div>
-                        <div id="timeTimeline" class="grid grid-cols-3 gap-1.5 text-center text-[14px]">
+                        <div id="timeTimeline" class="grid grid-cols-3 gap-1.5 text-center text-[12pt]">
                             <!-- JavaScriptで動的生成 -->
                         </div>
                     </div>
@@ -321,7 +323,7 @@
             '水戸':   { code: '080000', lat: 36.3418, lon: 140.4468 },
             '栃木':   { code: '090000', lat: 36.5657, lon: 139.8836 },
             '宇都宮': { code: '090000', lat: 36.5657, lon: 139.8836 },
-            '群生':   { code: '100000', lat: 36.3912, lon: 139.0608 },
+            '群馬':   { code: '100000', lat: 36.3912, lon: 139.0608 },
             '前橋':   { code: '100000', lat: 36.3912, lon: 139.0608 },
             '埼玉':   { code: '110000', lat: 35.8569, lon: 139.6489 },
             '千葉':   { code: '120000', lat: 35.6046, lon: 140.1233 },
@@ -922,7 +924,7 @@
             if (weatherText.includes('雨')) {
                 emojiEl.innerText = weatherText.includes('雷') ? '⛈' : '🌧';
             } else if (weatherText.includes('雪')) {
-                emojiEl.innerText = '❄️';
+                emojiEl.innerText = '❄';
             } else if (weatherText.includes('曇')) {
                 emojiEl.innerText = weatherText.includes('晴') ? '⛅' : '☁';
             } else {
@@ -976,23 +978,23 @@
                 `;
             }
 
-            // 朝・昼・夜の気温タイムライン表示
+            // 朝・昼・夜の気温タイムライン表示（アドバイス文を改行なし1行で表示）
             if (timeTimeline) {
                 timeTimeline.innerHTML = `
-                    <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
-                        <div class="text-[#8e8e93] text-[14px]">朝 (8時)</div>
-                        <div class="font-bold text-white font-mono text-[14px]">${morningTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[14px] mt-0.5">${morningTemp <= 15 ? '羽織り推奨' : '快適'}</div>
+                    <div class="bg-[#2c2c2e]/70 rounded-xl px-1 py-2 border border-[#3a3a3c] flex flex-col items-center justify-between min-h-[96px] overflow-hidden">
+                        <div class="text-[#8e8e93] text-[12pt] font-medium whitespace-nowrap">朝 (8時)</div>
+                        <div class="font-bold text-white font-mono text-[12pt] my-1">${morningTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[12px] whitespace-nowrap tracking-tight text-center w-full">${morningTemp <= 15 ? '羽織り推奨' : '快適'}</div>
                     </div>
-                    <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
-                        <div class="text-[#8e8e93] text-[14px]">昼 (14時)</div>
-                        <div class="font-bold text-orange-400 font-mono text-[14px]">${noonTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[14px] mt-0.5">${noonTemp >= 22 ? '上着不要' : '適温'}</div>
+                    <div class="bg-[#2c2c2e]/70 rounded-xl px-1 py-2 border border-[#3a3a3c] flex flex-col items-center justify-between min-h-[96px] overflow-hidden">
+                        <div class="text-[#8e8e93] text-[12pt] font-medium whitespace-nowrap">昼 (14時)</div>
+                        <div class="font-bold text-orange-400 font-mono text-[12pt] my-1">${noonTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[12px] whitespace-nowrap tracking-tight text-center w-full">${noonTemp >= 22 ? '上着不要' : '適温'}</div>
                     </div>
-                    <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
-                        <div class="text-[#8e8e93] text-[14px]">夜 (20時)</div>
-                        <div class="font-bold text-[#64d2ff] font-mono text-[14px]">${nightTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[14px] mt-0.5">${nightTemp <= 14 ? '冷え込み注意' : '過ごしやすい'}</div>
+                    <div class="bg-[#2c2c2e]/70 rounded-xl px-1 py-2 border border-[#3a3a3c] flex flex-col items-center justify-between min-h-[96px] overflow-hidden">
+                        <div class="text-[#8e8e93] text-[12pt] font-medium whitespace-nowrap">夜 (20時)</div>
+                        <div class="font-bold text-[#64d2ff] font-mono text-[12pt] my-1">${nightTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[12px] whitespace-nowrap tracking-tight text-center w-full">${nightTemp <= 14 ? '冷え込み注意' : '過ごしやすい'}</div>
                     </div>
                 `;
             }
