@@ -1,4 +1,4 @@
-const CACHE_NAME = 'weather-clothes-cache-v12';
+const CACHE_NAME = 'weather-clothes-cache-v13';
 const urlsToCache = [
   './',
   './index.html',
@@ -32,6 +32,7 @@ self.addEventListener('activate', event => {
   );
 });
 
+// Cache-First (フォールバック用)
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)

@@ -49,14 +49,15 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 最小フォントサイズ12px保証 */
+        /* 最小フォントサイズ14px保証 */
         html, body {
             -webkit-text-size-adjust: 100%;
             text-size-adjust: 100%;
+            font-size: 14px;
         }
     </style>
 </head>
-<body class="min-h-screen bg-black flex flex-col justify-between p-4 safe-area-top safe-area-bottom selection:bg-orange-500 selection:text-white">
+<body class="min-h-screen bg-black flex flex-col justify-between p-4 safe-area-top safe-area-bottom selection:bg-orange-500 selection:text-white text-[14px]">
 
     <div class="w-full max-w-sm mx-auto flex-1 flex flex-col justify-start space-y-4">
         
@@ -80,7 +81,7 @@
                     <span>📍</span>
                     <span>登録場所の選択・管理</span>
                 </label>
-                <span id="saveStatus" class="text-[13px] text-[#30d158] font-medium transition-opacity opacity-0">追加完了</span>
+                <span id="saveStatus" class="text-[14px] text-[#30d158] font-medium transition-opacity opacity-0">追加完了</span>
             </div>
             
             <!-- 追加フォーム -->
@@ -111,7 +112,7 @@
         <!-- Day Selection & Action Section -->
         <div class="bg-[#1c1c1e] border border-[#2c2c2e] rounded-2xl p-3.5 shadow-2xl backdrop-blur-md space-y-3">
             <div>
-                <label class="text-[13px] font-medium text-[#8e8e93] block mb-1.5 px-0.5">
+                <label class="text-[14px] font-medium text-[#8e8e93] block mb-1.5 px-0.5">
                     📅 判定する対象日を選択
                 </label>
                 <div class="grid grid-cols-2 gap-1.5 bg-[#2c2c2e]/70 p-1 rounded-xl border border-[#3a3a3c]">
@@ -163,10 +164,10 @@
                     <span>戻る</span>
                 </button>
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="toggleOverviewModal(true)" class="ios-btn bg-[#2c2c2e] hover:bg-[#3a3a3c] text-[#aeaeb2] hover:text-white text-[13px] px-2.5 py-1 rounded-lg border border-[#3a3a3c] flex items-center gap-1 transition-all">
+                    <button type="button" onclick="toggleOverviewModal(true)" class="ios-btn bg-[#2c2c2e] hover:bg-[#3a3a3c] text-[#aeaeb2] hover:text-white text-[14px] px-2.5 py-1 rounded-lg border border-[#3a3a3c] flex items-center gap-1 transition-all">
                         <span>📜 概況</span>
                     </button>
-                    <span id="resultLocationBadge" class="text-[13px] bg-[#2c2c2e] text-white border border-[#3a3a3c] px-3 py-1 rounded-full font-medium">東京都品川区</span>
+                    <span id="resultLocationBadge" class="text-[14px] bg-[#2c2c2e] text-white border border-[#3a3a3c] px-3 py-1 rounded-full font-medium">東京都品川区</span>
                 </div>
             </div>
 
@@ -178,14 +179,14 @@
                         type="button" 
                         id="resTabToday"
                         onclick="switchResultDay('today')" 
-                        class="ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all text-[#aeaeb2]">
+                        class="ios-btn py-1 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2]">
                         今日
                     </button>
                     <button 
                         type="button" 
                         id="resTabTomorrow"
                         onclick="switchResultDay('tomorrow')" 
-                        class="ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow">
+                        class="ios-btn py-1 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow">
                         明日
                     </button>
                 </div>
@@ -198,7 +199,7 @@
                             <span id="forecastHeaderTitle" class="text-[15px] font-bold text-white">予報</span>
                         </div>
                         <div>
-                            <span id="forecastApparentBadge" class="text-[13px] bg-orange-500/20 text-orange-400 font-bold px-2 py-0.5 rounded-full border border-orange-500/30">体感 --℃</span>
+                            <span id="forecastApparentBadge" class="text-[14px] bg-orange-500/20 text-orange-400 font-bold px-2 py-0.5 rounded-full border border-orange-500/30">体感 --℃</span>
                         </div>
                     </div>
                     <div id="forecastSection" class="text-[14px] font-medium text-[#d1d1d6] leading-snug space-y-1"></div>
@@ -211,23 +212,23 @@
                             <span class="text-base">👔</span>
                             <h3 class="text-[15px] font-bold text-[#ff9500] uppercase tracking-wider">推奨服装</h3>
                         </div>
-                        <span id="criteriaBadge" class="text-[13px] text-white/80 font-medium">--</span>
+                        <span id="criteriaBadge" class="text-[14px] text-white/80 font-medium">--</span>
                     </div>
                     <div id="outfitSection" class="space-y-1.5"></div>
                     
                     <!-- 朝・昼・夜の気温＆服装タイムライン -->
                     <div class="bg-[#1c1c1e]/80 rounded-xl p-2.5 border border-[#3a3a3c] space-y-1.5 mt-2">
-                        <div class="text-[12px] font-bold text-[#8e8e93] flex items-center justify-between">
+                        <div class="text-[14px] font-bold text-[#8e8e93] flex items-center justify-between">
                             <span>🕒 朝・昼・夜の寒暖差対策</span>
-                            <span class="text-[12px] font-normal text-[#636366]">気温推移目安</span>
+                            <span class="text-[14px] font-normal text-[#636366]">気温推移目安</span>
                         </div>
-                        <div id="timeTimeline" class="grid grid-cols-3 gap-1.5 text-center text-[12px]">
+                        <div id="timeTimeline" class="grid grid-cols-3 gap-1.5 text-center text-[14px]">
                             <!-- JavaScriptで動的生成 -->
                         </div>
                     </div>
 
                     <!-- Rain / Acc Advice -->
-                    <div id="accessoryAdvice" class="mt-2 bg-[#1c1c1e]/60 rounded-xl p-2.5 border border-[#3a3a3c] text-[13px] text-[#aeaeb2]">
+                    <div id="accessoryAdvice" class="mt-2 bg-[#1c1c1e]/60 rounded-xl p-2.5 border border-[#3a3a3c] text-[14px] text-[#aeaeb2]">
                         <!-- Dynamic accessory notice -->
                     </div>
                 </div>
@@ -249,9 +250,9 @@
                         <span class="text-base">📜</span>
                         <h3 id="jmaOverviewTitle" class="text-[15px] font-bold text-white">気象庁 天気概況</h3>
                     </div>
-                    <span id="jmaReportTimeBadge" class="text-[12px] text-[#8e8e93] font-mono">--:-- 発表</span>
+                    <span id="jmaReportTimeBadge" class="text-[14px] text-[#8e8e93] font-mono">--:-- 発表</span>
                 </div>
-                <div id="jmaOverviewText" class="text-[13px] text-[#d1d1d6] leading-relaxed whitespace-pre-wrap overflow-y-auto pr-1 py-1 max-h-[50vh]">
+                <div id="jmaOverviewText" class="text-[14px] text-[#d1d1d6] leading-relaxed whitespace-pre-wrap overflow-y-auto pr-1 py-1 max-h-[50vh]">
                     気象概況を取得中...
                 </div>
                 <div class="pt-1">
@@ -269,11 +270,11 @@
                     <h3 class="text-[17px] font-bold text-white">⚙️ API詳細設定（任意）</h3>
                     <button type="button" onclick="toggleSettingsModal(false)" class="text-[#8e8e93] hover:text-white text-lg">✕</button>
                 </div>
-                <p class="text-[13px] text-[#8e8e93] leading-relaxed">
+                <p class="text-[14px] text-[#8e8e93] leading-relaxed">
                     標準状態で登録不要の気象庁公式APIおよびOpen-Meteoを使用しているため、設定なしでもそのままご利用いただけます。
                 </p>
                 <div>
-                    <label for="userApiKey" class="text-[13px] text-[#8e8e93] mb-1 block">Gemini APIキー（設定すると高度な助言を追加可能）</label>
+                    <label for="userApiKey" class="text-[14px] text-[#8e8e93] mb-1 block">Gemini APIキー（設定すると高度な助言を追加可能）</label>
                     <input 
                         type="password" 
                         id="userApiKey" 
@@ -295,7 +296,7 @@
 
     <!-- Minimal Footer -->
     <footer class="text-center py-2">
-        <p class="text-[13px] text-[#636366]">気象庁公式データ ＆ Open-Meteo連携</p>
+        <p class="text-[14px] text-[#636366]">気象庁公式データ ＆ Open-Meteo連携</p>
     </footer>
 
     <script>
@@ -320,7 +321,7 @@
             '水戸':   { code: '080000', lat: 36.3418, lon: 140.4468 },
             '栃木':   { code: '090000', lat: 36.5657, lon: 139.8836 },
             '宇都宮': { code: '090000', lat: 36.5657, lon: 139.8836 },
-            '群馬':   { code: '100000', lat: 36.3912, lon: 139.0608 },
+            '群生':   { code: '100000', lat: 36.3912, lon: 139.0608 },
             '前橋':   { code: '100000', lat: 36.3912, lon: 139.0608 },
             '埼玉':   { code: '110000', lat: 35.8569, lon: 139.6489 },
             '千葉':   { code: '120000', lat: 35.6046, lon: 140.1233 },
@@ -456,11 +457,11 @@
             const resTomorrow = document.getElementById('resTabTomorrow');
             if (resToday && resTomorrow) {
                 if (isToday) {
-                    resToday.className = 'ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow';
-                    resTomorrow.className = 'ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all text-[#aeaeb2]';
+                    resToday.className = 'ios-btn py-1 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow';
+                    resTomorrow.className = 'ios-btn py-1 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2]';
                 } else {
-                    resTomorrow.className = 'ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow';
-                    resToday.className = 'ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all text-[#aeaeb2]';
+                    resTomorrow.className = 'ios-btn py-1 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow';
+                    resToday.className = 'ios-btn py-1 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2]';
                 }
             }
 
@@ -923,7 +924,7 @@
             } else if (weatherText.includes('雪')) {
                 emojiEl.innerText = '❄️';
             } else if (weatherText.includes('曇')) {
-                emojiEl.innerText = weatherText.includes('晴') ? '⛅' : '☁️';
+                emojiEl.innerText = weatherText.includes('晴') ? '⛅' : '☁';
             } else {
                 emojiEl.innerText = '☀️';
             }
@@ -944,7 +945,7 @@
                     </div>
                     <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60">
                         <span class="text-[#8e8e93]">風の予報</span>
-                        <span class="text-white font-medium text-right text-[13px]">${escapeHtml(windText)} (最大約${maxWindSpeed}m/s)</span>
+                        <span class="text-white font-medium text-right text-[14px]">${escapeHtml(windText)} (最大約${maxWindSpeed}m/s)</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60">
                         <span class="text-[#8e8e93]">気温（最低 / 最高）</span>
@@ -965,11 +966,11 @@
             if (outfitSec) {
                 outfitSec.innerHTML = `
                     <div class="bg-[#1c1c1e]/90 rounded-xl p-2.5 border border-[#ff9500]/30 shadow-sm">
-                        <div class="text-[13px] font-bold text-[#ff9500] uppercase tracking-wider mb-0.5">【上着・トップス】</div>
+                        <div class="text-[14px] font-bold text-[#ff9500] uppercase tracking-wider mb-0.5">【上着・トップス】</div>
                         <div class="text-white font-semibold text-[15px] leading-snug">${escapeHtml(outfit.jacket)}</div>
                     </div>
                     <div class="bg-[#1c1c1e]/90 rounded-xl p-2.5 border border-[#ff9500]/30 shadow-sm">
-                        <div class="text-[13px] font-bold text-[#ff9500] uppercase tracking-wider mb-0.5">【ボトムス・ズボン】</div>
+                        <div class="text-[14px] font-bold text-[#ff9500] uppercase tracking-wider mb-0.5">【ボトムス・ズボン】</div>
                         <div class="text-white font-semibold text-[15px] leading-snug">${escapeHtml(outfit.pants)}</div>
                     </div>
                 `;
@@ -979,19 +980,19 @@
             if (timeTimeline) {
                 timeTimeline.innerHTML = `
                     <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
-                        <div class="text-[#8e8e93] text-[12px]">朝 (8時)</div>
-                        <div class="font-bold text-white font-mono text-[13px]">${morningTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[12px] mt-0.5">${morningTemp <= 15 ? '羽織り推奨' : '快適'}</div>
+                        <div class="text-[#8e8e93] text-[14px]">朝 (8時)</div>
+                        <div class="font-bold text-white font-mono text-[14px]">${morningTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[14px] mt-0.5">${morningTemp <= 15 ? '羽織り推奨' : '快適'}</div>
                     </div>
                     <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
-                        <div class="text-[#8e8e93] text-[12px]">昼 (14時)</div>
-                        <div class="font-bold text-orange-400 font-mono text-[13px]">${noonTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[12px] mt-0.5">${noonTemp >= 22 ? '上着不要' : '適温'}</div>
+                        <div class="text-[#8e8e93] text-[14px]">昼 (14時)</div>
+                        <div class="font-bold text-orange-400 font-mono text-[14px]">${noonTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[14px] mt-0.5">${noonTemp >= 22 ? '上着不要' : '適温'}</div>
                     </div>
                     <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
-                        <div class="text-[#8e8e93] text-[12px]">夜 (20時)</div>
-                        <div class="font-bold text-[#64d2ff] font-mono text-[13px]">${nightTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[12px] mt-0.5">${nightTemp <= 14 ? '冷え込み注意' : '過ごしやすい'}</div>
+                        <div class="text-[#8e8e93] text-[14px]">夜 (20時)</div>
+                        <div class="font-bold text-[#64d2ff] font-mono text-[14px]">${nightTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[14px] mt-0.5">${nightTemp <= 14 ? '冷え込み注意' : '過ごしやすい'}</div>
                     </div>
                 `;
             }
