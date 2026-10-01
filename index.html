@@ -202,7 +202,8 @@
                             <span id="forecastApparentBadge" class="text-[14px] bg-orange-500/20 text-orange-400 font-bold px-2 py-0.5 rounded-full border border-orange-500/30">体感 --℃</span>
                         </div>
                     </div>
-                    <div id="forecastSection" class="text-[14px] font-medium text-[#d1d1d6] leading-snug space-y-1"></div>
+                    <!-- 予報詳細テーブルコンテナ（フォントサイズを1ポイント大きくして視認性を向上） -->
+                    <div id="forecastSection" class="text-[15px] font-medium text-[#d1d1d6] leading-snug space-y-1"></div>
                 </div>
 
                 <!-- Outfit Section -->
@@ -216,7 +217,7 @@
                     </div>
                     <div id="outfitSection" class="space-y-1.5"></div>
                     
-                    <!-- 朝・昼・夜の気温＆服装タイムライン（レイアウト改善版） -->
+                    <!-- 朝・昼・夜の気温＆服装タイムライン -->
                     <div class="bg-[#1c1c1e]/85 rounded-xl p-2.5 border border-[#3a3a3c] space-y-2 mt-2">
                         <div class="flex items-center justify-between text-[12pt] px-0.5">
                             <span class="font-bold text-[#ff9500] flex items-center gap-1">
@@ -655,7 +656,6 @@
             return { code: '130000', lat: 35.6895, lon: 139.6917 };
         }
 
-        // 明日の日付（YYYY-MM-DD）をJST基準で算出
         function getTomorrowDateString() {
             const now = new Date();
             const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
@@ -712,7 +712,6 @@
                     fetch(meteoUrl).catch(() => null)
                 ]);
 
-                // 気象庁公式の概況
                 let overviewReportTime = '';
                 let overviewTarget = '';
                 let overviewBody = '気象庁の概況文を更新中、または取得できませんでした。';
@@ -939,27 +938,28 @@
 
             const popDisplay = popList.length > 0 ? popList.join(' / ') : '--%';
 
+            // 2枚目の画像にある各項目結果のフォントサイズを1ポイント大きく（14px → 15px）設定
             if (forecastSec) {
                 forecastSec.innerHTML = `
-                    <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60">
-                        <span class="text-[#8e8e93] shrink-0">天気</span>
-                        <span class="text-white font-semibold text-right">${escapeHtml(weatherText)}</span>
+                    <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60 items-center">
+                        <span class="text-[#8e8e93] shrink-0 text-[14px]">天気</span>
+                        <span class="text-white font-semibold text-right text-[15px]">${escapeHtml(weatherText)}</span>
                     </div>
-                    <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60">
-                        <span class="text-[#8e8e93]">風の予報</span>
-                        <span class="text-white font-medium text-right text-[14px]">${escapeHtml(windText)} (最大約${maxWindSpeed}m/s)</span>
+                    <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60 items-center">
+                        <span class="text-[#8e8e93] text-[14px]">風の予報</span>
+                        <span class="text-white font-medium text-right text-[15px]">${escapeHtml(windText)} (最大約${maxWindSpeed}m/s)</span>
                     </div>
-                    <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60">
-                        <span class="text-[#8e8e93]">気温（最低 / 最高）</span>
-                        <span class="text-white font-mono font-bold">${minTemp}℃ / ${maxTemp}℃</span>
+                    <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60 items-center">
+                        <span class="text-[#8e8e93] text-[14px]">気温（最低 / 最高）</span>
+                        <span class="text-white font-mono font-bold text-[15px]">${minTemp}℃ / ${maxTemp}℃</span>
                     </div>
-                    <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60">
-                        <span class="text-[#8e8e93]">降水確率</span>
-                        <span class="text-white font-mono font-semibold">${popDisplay}</span>
+                    <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60 items-center">
+                        <span class="text-[#8e8e93] text-[14px]">降水確率</span>
+                        <span class="text-white font-mono font-semibold text-[15px]">${popDisplay}</span>
                     </div>
-                    <div class="flex justify-between py-1">
-                        <span class="text-[#8e8e93]">日中体感温度</span>
-                        <span class="text-orange-400 font-bold font-mono">${apparentTemp}℃</span>
+                    <div class="flex justify-between py-1 items-center">
+                        <span class="text-[#8e8e93] text-[14px]">日中体感温度</span>
+                        <span class="text-orange-400 font-bold font-mono text-[15px]">${apparentTemp}℃</span>
                     </div>
                 `;
             }
@@ -969,32 +969,32 @@
                 outfitSec.innerHTML = `
                     <div class="bg-[#1c1c1e]/90 rounded-xl p-2.5 border border-[#ff9500]/30 shadow-sm">
                         <div class="text-[14px] font-bold text-[#ff9500] uppercase tracking-wider mb-0.5">【上着・トップス】</div>
-                        <div class="text-white font-semibold text-[15px] leading-snug">${escapeHtml(outfit.jacket)}</div>
+                        <div class="text-white font-semibold text-[16px] leading-snug">${escapeHtml(outfit.jacket)}</div>
                     </div>
                     <div class="bg-[#1c1c1e]/90 rounded-xl p-2.5 border border-[#ff9500]/30 shadow-sm">
                         <div class="text-[14px] font-bold text-[#ff9500] uppercase tracking-wider mb-0.5">【ボトムス・ズボン】</div>
-                        <div class="text-white font-semibold text-[15px] leading-snug">${escapeHtml(outfit.pants)}</div>
+                        <div class="text-white font-semibold text-[16px] leading-snug">${escapeHtml(outfit.pants)}</div>
                     </div>
                 `;
             }
 
-            // 朝・昼・夜の気温タイムライン表示（アドバイス文を改行なし1行で表示）
+            // 朝・昼・夜の気温タイムライン表示（結果の気温とアドバイスを1ポイント拡大）
             if (timeTimeline) {
                 timeTimeline.innerHTML = `
                     <div class="bg-[#2c2c2e]/70 rounded-xl px-1 py-2 border border-[#3a3a3c] flex flex-col items-center justify-between min-h-[96px] overflow-hidden">
                         <div class="text-[#8e8e93] text-[12pt] font-medium whitespace-nowrap">朝 (8時)</div>
-                        <div class="font-bold text-white font-mono text-[12pt] my-1">${morningTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[12px] whitespace-nowrap tracking-tight text-center w-full">${morningTemp <= 15 ? '羽織り推奨' : '快適'}</div>
+                        <div class="font-bold text-white font-mono text-[13pt] my-1">${morningTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[13px] whitespace-nowrap tracking-tight text-center w-full">${morningTemp <= 15 ? '羽織り推奨' : '快適'}</div>
                     </div>
                     <div class="bg-[#2c2c2e]/70 rounded-xl px-1 py-2 border border-[#3a3a3c] flex flex-col items-center justify-between min-h-[96px] overflow-hidden">
                         <div class="text-[#8e8e93] text-[12pt] font-medium whitespace-nowrap">昼 (14時)</div>
-                        <div class="font-bold text-orange-400 font-mono text-[12pt] my-1">${noonTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[12px] whitespace-nowrap tracking-tight text-center w-full">${noonTemp >= 22 ? '上着不要' : '適温'}</div>
+                        <div class="font-bold text-orange-400 font-mono text-[13pt] my-1">${noonTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[13px] whitespace-nowrap tracking-tight text-center w-full">${noonTemp >= 22 ? '上着不要' : '適温'}</div>
                     </div>
                     <div class="bg-[#2c2c2e]/70 rounded-xl px-1 py-2 border border-[#3a3a3c] flex flex-col items-center justify-between min-h-[96px] overflow-hidden">
                         <div class="text-[#8e8e93] text-[12pt] font-medium whitespace-nowrap">夜 (20時)</div>
-                        <div class="font-bold text-[#64d2ff] font-mono text-[12pt] my-1">${nightTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[12px] whitespace-nowrap tracking-tight text-center w-full">${nightTemp <= 14 ? '冷え込み注意' : '過ごしやすい'}</div>
+                        <div class="font-bold text-[#64d2ff] font-mono text-[13pt] my-1">${nightTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[13px] whitespace-nowrap tracking-tight text-center w-full">${nightTemp <= 14 ? '冷え込み注意' : '過ごしやすい'}</div>
                     </div>
                 `;
             }
