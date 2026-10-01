@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>明日の服装予報（気象庁公式連携版）</title>
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="icon-180.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -45,10 +49,6 @@
             to { transform: rotate(360deg); }
         }
     </style>
-    <!-- PWA Settings -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
-    <link rel="apple-touch-icon" href="icon-180.png">
 </head>
 <body class="min-h-screen bg-black flex flex-col justify-between p-4 safe-area-top safe-area-bottom selection:bg-orange-500 selection:text-white">
 
@@ -56,7 +56,7 @@
         
         <!-- iOS Style Header -->
         <header class="pt-2 pb-1 text-center relative">
-            <button onclick="toggleSettingsModal(true)" class="absolute right-0 top-1 text-[#8e8e93] hover:text-white p-2 text-xl transition-colors" title="設定">
+            <button type="button" onclick="toggleSettingsModal(true)" class="absolute right-0 top-1 text-[#8e8e93] hover:text-white p-2 text-xl transition-colors" title="設定">
                 ⚙️
             </button>
             <h1 class="text-[22px] font-bold tracking-tight text-white flex items-center justify-center gap-1.5">
@@ -127,6 +127,7 @@
             </div>
 
             <button 
+                type="button"
                 id="checkBtn" 
                 onclick="getRecommendation()" 
                 class="ios-btn w-full bg-gradient-to-r from-[#ff9500] to-[#ff5e3a] hover:brightness-110 text-white font-semibold text-[16px] h-12 rounded-xl shadow-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer touch-manipulation">
@@ -149,14 +150,14 @@
         <div id="resultBox" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col safe-area-top safe-area-bottom">
             <!-- Navigation Bar with Back Button & Overview Button -->
             <div class="flex items-center justify-between px-4 py-2.5 border-b border-[#2c2c2e] bg-[#1c1c1e]/80 backdrop-blur-md">
-                <button onclick="closeResult()" class="ios-btn flex items-center gap-1 text-[#ff9500] font-semibold text-[16px] py-1 px-1 rounded-xl">
+                <button type="button" onclick="closeResult()" class="ios-btn flex items-center gap-1 text-[#ff9500] font-semibold text-[16px] py-1 px-1 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                     </svg>
                     <span>戻る</span>
                 </button>
                 <div class="flex items-center gap-2">
-                    <button onclick="toggleOverviewModal(true)" class="ios-btn bg-[#2c2c2e] hover:bg-[#3a3a3c] text-[#aeaeb2] hover:text-white text-[13px] px-2.5 py-1 rounded-lg border border-[#3a3a3c] flex items-center gap-1 transition-all">
+                    <button type="button" onclick="toggleOverviewModal(true)" class="ios-btn bg-[#2c2c2e] hover:bg-[#3a3a3c] text-[#aeaeb2] hover:text-white text-[13px] px-2.5 py-1 rounded-lg border border-[#3a3a3c] flex items-center gap-1 transition-all">
                         <span>📜 概況</span>
                     </button>
                     <span id="resultLocationBadge" class="text-[13px] bg-[#2c2c2e] text-white border border-[#3a3a3c] px-3 py-1 rounded-full font-medium">東京都品川区</span>
@@ -164,7 +165,25 @@
             </div>
 
             <!-- Scrollable Content Area -->
-            <div class="flex-1 overflow-y-auto px-3.5 py-2.5 space-y-2.5 max-w-sm w-full mx-auto">
+            <div id="resultScrollContainer" class="flex-1 overflow-y-auto px-3.5 py-2.5 space-y-2.5 max-w-sm w-full mx-auto">
+                <!-- In-Result Day Switcher -->
+                <div class="grid grid-cols-2 gap-1 bg-[#2c2c2e]/80 p-1 rounded-xl border border-[#3a3a3c]">
+                    <button 
+                        type="button" 
+                        id="resTabToday"
+                        onclick="switchResultDay('today')" 
+                        class="ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all text-[#aeaeb2]">
+                        今日
+                    </button>
+                    <button 
+                        type="button" 
+                        id="resTabTomorrow"
+                        onclick="switchResultDay('tomorrow')" 
+                        class="ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow">
+                        明日
+                    </button>
+                </div>
+
                 <!-- Weather Details Section -->
                 <div class="bg-[#1c1c1e] rounded-2xl p-3 border border-[#2c2c2e] shadow-lg space-y-1.5">
                     <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-1.5">
@@ -190,6 +209,17 @@
                     </div>
                     <div id="outfitSection" class="space-y-1.5"></div>
                     
+                    <!-- 朝・昼・夜の気温＆服装タイムライン -->
+                    <div class="bg-[#1c1c1e]/80 rounded-xl p-2.5 border border-[#3a3a3c] space-y-1.5 mt-2">
+                        <div class="text-[12px] font-bold text-[#8e8e93] flex items-center justify-between">
+                            <span>🕒 朝・昼・夜の寒暖差対策</span>
+                            <span class="text-[11px] font-normal text-[#636366]">気温推移目安</span>
+                        </div>
+                        <div id="timeTimeline" class="grid grid-cols-3 gap-1.5 text-center text-[12px]">
+                            <!-- JavaScriptで動的生成 -->
+                        </div>
+                    </div>
+
                     <!-- Rain / Acc Advice -->
                     <div id="accessoryAdvice" class="mt-2 bg-[#1c1c1e]/60 rounded-xl p-2.5 border border-[#3a3a3c] text-[13px] text-[#aeaeb2]">
                         <!-- Dynamic accessory notice -->
@@ -198,7 +228,7 @@
 
                 <!-- Bottom Back Button -->
                 <div class="pt-1 pb-4">
-                    <button onclick="closeResult()" class="ios-btn w-full bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white font-medium text-[15px] h-10 rounded-xl border border-[#3a3a3c] transition-all flex items-center justify-center">
+                    <button type="button" onclick="closeResult()" class="ios-btn w-full bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white font-medium text-[15px] h-10 rounded-xl border border-[#3a3a3c] transition-all flex items-center justify-center">
                         閉じて戻る
                     </button>
                 </div>
@@ -219,7 +249,7 @@
                     気象概況を取得中...
                 </div>
                 <div class="pt-1">
-                    <button onclick="toggleOverviewModal(false)" class="ios-btn w-full bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white font-medium text-[14px] py-2 rounded-xl border border-[#3a3a3c]">
+                    <button type="button" onclick="toggleOverviewModal(false)" class="ios-btn w-full bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white font-medium text-[14px] py-2 rounded-xl border border-[#3a3a3c]">
                         閉じる
                     </button>
                 </div>
@@ -231,13 +261,13 @@
             <div class="bg-[#1c1c1e] border border-[#2c2c2e] rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="text-[17px] font-bold text-white">⚙️ API詳細設定（任意）</h3>
-                    <button onclick="toggleSettingsModal(false)" class="text-[#8e8e93] hover:text-white text-lg">✕</button>
+                    <button type="button" onclick="toggleSettingsModal(false)" class="text-[#8e8e93] hover:text-white text-lg">✕</button>
                 </div>
                 <p class="text-[13px] text-[#8e8e93] leading-relaxed">
                     標準状態で登録不要の気象庁公式APIおよびOpen-Meteoを使用しているため、設定なしでもそのままご利用いただけます。
                 </p>
                 <div>
-                    <label class="text-[13px] text-[#8e8e93] mb-1 block">Gemini APIキー（設定すると高度な助言を追加可能）</label>
+                    <label for="userApiKey" class="text-[13px] text-[#8e8e93] mb-1 block">Gemini APIキー（設定すると高度な助言を追加可能）</label>
                     <input 
                         type="password" 
                         id="userApiKey" 
@@ -246,8 +276,8 @@
                     >
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="saveApiKeySettings()" class="flex-1 bg-[#0a84ff] hover:bg-[#0071e3] text-white py-2 rounded-xl text-[14px] font-semibold transition-colors">保存する</button>
-                    <button onclick="toggleSettingsModal(false)" class="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-[#aeaeb2] px-4 py-2 rounded-xl text-[14px] transition-colors">キャンセル</button>
+                    <button type="button" onclick="saveApiKeySettings()" class="flex-1 bg-[#0a84ff] hover:bg-[#0071e3] text-white py-2 rounded-xl text-[14px] font-semibold transition-colors">保存する</button>
+                    <button type="button" onclick="toggleSettingsModal(false)" class="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-[#aeaeb2] px-4 py-2 rounded-xl text-[14px] transition-colors">キャンセル</button>
                 </div>
             </div>
         </div>
@@ -389,6 +419,14 @@
             updateTabStyles();
         }
 
+        function switchResultDay(day) {
+            selectedDay = day;
+            updateTabStyles();
+            if (cachedForecastData && cachedForecastData[selectedDay]) {
+                renderForecastView(cachedForecastData[selectedDay]);
+            }
+        }
+
         function updateTabStyles() {
             const isToday = (selectedDay === 'today');
             
@@ -404,6 +442,19 @@
                 } else {
                     mTomorrow.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow-md';
                     mToday.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2] hover:text-white';
+                }
+            }
+
+            // 結果画面内のタブ更新
+            const resToday = document.getElementById('resTabToday');
+            const resTomorrow = document.getElementById('resTabTomorrow');
+            if (resToday && resTomorrow) {
+                if (isToday) {
+                    resToday.className = 'ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow';
+                    resTomorrow.className = 'ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all text-[#aeaeb2]';
+                } else {
+                    resTomorrow.className = 'ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow';
+                    resToday.className = 'ios-btn py-1 text-[13px] font-semibold rounded-lg transition-all text-[#aeaeb2]';
                 }
             }
 
@@ -622,6 +673,7 @@
             const jmaOverviewTitle = document.getElementById('jmaOverviewTitle');
             const jmaReportTimeBadge = document.getElementById('jmaReportTimeBadge');
             const jmaOverviewText = document.getElementById('jmaOverviewText');
+            const resultScroll = document.getElementById('resultScrollContainer');
 
             const targetLocation = activeLocation || '東京都品川区';
 
@@ -643,7 +695,7 @@
 
                 const jmaForecastUrl = `https://www.jma.go.jp/bosai/forecast/data/forecast/${areaCode}.json`;
                 const jmaOverviewUrl = `https://www.jma.go.jp/bosai/forecast/data/overview_forecast/${areaCode}.json`;
-                const meteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=apparent_temperature_max,apparent_temperature_min,temperature_2m_max,temperature_2m_min,windspeed_10m_max,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=4`;
+                const meteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=apparent_temperature_max,apparent_temperature_min,temperature_2m_max,temperature_2m_min,windspeed_10m_max,precipitation_probability_max&hourly=temperature_2m,apparent_temperature&timezone=Asia%2FTokyo&forecast_days=4`;
 
                 const [jmaForecastRes, jmaOverviewRes, meteoRes] = await Promise.all([
                     fetch(jmaForecastUrl).catch(() => null),
@@ -694,6 +746,9 @@
                     let targetDateLabel = labelPrefix;
                     let apparentTemp = null;
                     let maxWindSpeed = 3.0;
+                    let morningTemp = null;
+                    let noonTemp = null;
+                    let nightTemp = null;
 
                     if (Array.isArray(jmaData) && jmaData.length > 0) {
                         const weatherSeries = jmaData[0]?.timeSeries?.[0];
@@ -777,11 +832,32 @@
                         }
                     }
 
+                    // Open-Meteo Hourly（朝8時、昼14時、夜20時）の気温を抽出
+                    const hourly = meteoData?.hourly;
+                    if (hourly && Array.isArray(hourly.time)) {
+                        const mMorningIdx = hourly.time.indexOf(`${dateStr}T08:00`);
+                        const mNoonIdx = hourly.time.indexOf(`${dateStr}T14:00`);
+                        const mNightIdx = hourly.time.indexOf(`${dateStr}T20:00`);
+
+                        if (mMorningIdx !== -1 && hourly.temperature_2m?.[mMorningIdx] !== undefined) {
+                            morningTemp = Math.round(hourly.temperature_2m[mMorningIdx]);
+                        }
+                        if (mNoonIdx !== -1 && hourly.temperature_2m?.[mNoonIdx] !== undefined) {
+                            noonTemp = Math.round(hourly.temperature_2m[mNoonIdx]);
+                        }
+                        if (mNightIdx !== -1 && hourly.temperature_2m?.[mNightIdx] !== undefined) {
+                            nightTemp = Math.round(hourly.temperature_2m[mNightIdx]);
+                        }
+                    }
+
                     if (maxTemp === null) maxTemp = 20;
                     if (minTemp === null) minTemp = 14;
                     if (apparentTemp === null) {
                         apparentTemp = Math.round(maxTemp - (maxWindSpeed * 0.7));
                     }
+                    if (morningTemp === null) morningTemp = minTemp + 2;
+                    if (noonTemp === null) noonTemp = maxTemp;
+                    if (nightTemp === null) nightTemp = minTemp + 3;
 
                     return {
                         weatherText,
@@ -791,7 +867,10 @@
                         popList,
                         targetDateLabel,
                         apparentTemp,
-                        maxWindSpeed
+                        maxWindSpeed,
+                        morningTemp,
+                        noonTemp,
+                        nightTemp
                     };
                 };
 
@@ -802,7 +881,9 @@
                 };
 
                 // 選択されている日の予報を描画
+                updateTabStyles();
                 renderForecastView(cachedForecastData[selectedDay]);
+                if (resultScroll) resultScroll.scrollTop = 0;
                 resultBox.classList.remove('hidden');
 
             } catch (err) {
@@ -826,8 +907,9 @@
             const criteriaBadge = document.getElementById('criteriaBadge');
             const outfitSec = document.getElementById('outfitSection');
             const accessoryAdvice = document.getElementById('accessoryAdvice');
+            const timeTimeline = document.getElementById('timeTimeline');
 
-            const { weatherText, windText, maxTemp, minTemp, popList, targetDateLabel, apparentTemp, maxWindSpeed } = data;
+            const { weatherText, windText, maxTemp, minTemp, popList, targetDateLabel, apparentTemp, maxWindSpeed, morningTemp, noonTemp, nightTemp } = data;
 
             // 絵文字アイコン判定
             if (weatherText.includes('雨')) {
@@ -883,6 +965,27 @@
                     <div class="bg-[#1c1c1e]/90 rounded-xl p-2.5 border border-[#ff9500]/30 shadow-sm">
                         <div class="text-[13px] font-bold text-[#ff9500] uppercase tracking-wider mb-0.5">【ボトムス・ズボン】</div>
                         <div class="text-white font-semibold text-[15px] leading-snug">${escapeHtml(outfit.pants)}</div>
+                    </div>
+                `;
+            }
+
+            // 朝・昼・夜の気温タイムライン表示
+            if (timeTimeline) {
+                timeTimeline.innerHTML = `
+                    <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
+                        <div class="text-[#8e8e93] text-[11px]">朝 (8時)</div>
+                        <div class="font-bold text-white font-mono text-[13px]">${morningTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[10px] mt-0.5">${morningTemp <= 15 ? '羽織り推奨' : '快適'}</div>
+                    </div>
+                    <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
+                        <div class="text-[#8e8e93] text-[11px]">昼 (14時)</div>
+                        <div class="font-bold text-orange-400 font-mono text-[13px]">${noonTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[10px] mt-0.5">${noonTemp >= 22 ? '上着不要' : '適温'}</div>
+                    </div>
+                    <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
+                        <div class="text-[#8e8e93] text-[11px]">夜 (20時)</div>
+                        <div class="font-bold text-[#64d2ff] font-mono text-[13px]">${nightTemp}℃</div>
+                        <div class="text-[#aeaeb2] text-[10px] mt-0.5">${nightTemp <= 14 ? '冷え込み注意' : '過ごしやすい'}</div>
                     </div>
                 `;
             }
