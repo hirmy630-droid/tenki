@@ -1,4 +1,4 @@
-const CACHE_NAME = 'weather-clothes-cache-v4';
+const CACHE_NAME = 'weather-clothes-cache-v5';
 const urlsToCache = [
   './',
   './index.html',
