@@ -96,10 +96,6 @@
 
             <!-- 登録場所リスト -->
             <div class="pt-0.5">
-                <div class="text-[13px] text-[#8e8e93] mb-1.5 px-1 flex items-center justify-between">
-                    <span>選択中の地域（タップで切り替え）：</span>
-                    <span id="locationCount" class="text-[13px] text-[#636366]">0件</span>
-                </div>
                 <div id="locationList" class="space-y-1.5 max-h-[235px] overflow-y-auto pr-0.5">
                     <!-- JavaScriptで動的生成 -->
                 </div>
@@ -117,14 +113,14 @@
                         type="button" 
                         id="mainTabToday"
                         onclick="setTargetDay('today')" 
-                        class="ios-btn py-2 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2] hover:text-white">
+                        class="ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2] hover:text-white">
                         今日
                     </button>
                     <button 
                         type="button" 
                         id="mainTabTomorrow"
                         onclick="setTargetDay('tomorrow')" 
-                        class="ios-btn py-2 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow-md">
+                        class="ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow-md">
                         明日
                     </button>
                 </div>
@@ -169,24 +165,6 @@
 
             <!-- Scrollable Content Area -->
             <div class="flex-1 overflow-y-auto px-3.5 py-2.5 space-y-2.5 max-w-sm w-full mx-auto">
-                <!-- Result Quick Day Switcher -->
-                <div class="grid grid-cols-2 gap-1.5 bg-[#1c1c1e] p-1 rounded-xl border border-[#2c2c2e] shadow-md">
-                    <button 
-                        type="button" 
-                        id="resTabToday"
-                        onclick="switchResultDay('today')" 
-                        class="ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2]">
-                        今日
-                    </button>
-                    <button 
-                        type="button" 
-                        id="resTabTomorrow"
-                        onclick="switchResultDay('tomorrow')" 
-                        class="ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow">
-                        明日
-                    </button>
-                </div>
-
                 <!-- Weather Details Section -->
                 <div class="bg-[#1c1c1e] rounded-2xl p-3 border border-[#2c2c2e] shadow-lg space-y-1.5">
                     <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-1.5">
@@ -206,9 +184,9 @@
                     <div class="flex items-center justify-between border-b border-[#ff9500]/30 pb-1.5">
                         <div class="flex items-center gap-1.5">
                             <span class="text-base">👔</span>
-                            <h3 class="text-[15px] font-bold text-[#ff9500] uppercase tracking-wider">推奨コーディネート</h3>
+                            <h3 class="text-[15px] font-bold text-[#ff9500] uppercase tracking-wider">推奨服装</h3>
                         </div>
-                        <span id="criteriaBadge" class="text-[13px] text-white/80 font-medium">判定基準：--</span>
+                        <span id="criteriaBadge" class="text-[13px] text-white/80 font-medium">--</span>
                     </div>
                     <div id="outfitSection" class="space-y-1.5"></div>
                     
@@ -421,36 +399,16 @@
             
             if (mToday && mTomorrow) {
                 if (isToday) {
-                    mToday.className = 'ios-btn py-2 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow-md';
-                    mTomorrow.className = 'ios-btn py-2 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2] hover:text-white';
+                    mToday.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow-md';
+                    mTomorrow.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2] hover:text-white';
                 } else {
-                    mTomorrow.className = 'ios-btn py-2 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow-md';
-                    mToday.className = 'ios-btn py-2 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2] hover:text-white';
+                    mTomorrow.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow-md';
+                    mToday.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2] hover:text-white';
                 }
             }
 
             if (checkLabel) {
                 checkLabel.innerText = isToday ? '今日の服装・天気を判定' : '明日の服装・天気を判定';
-            }
-
-            // 結果画面のタブ更新
-            const rToday = document.getElementById('resTabToday');
-            const rTomorrow = document.getElementById('resTabTomorrow');
-            if (rToday && rTomorrow) {
-                if (isToday) {
-                    rToday.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow';
-                    rTomorrow.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2]';
-                } else {
-                    rTomorrow.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all bg-[#ff9500] text-white shadow';
-                    rToday.className = 'ios-btn py-1.5 text-[14px] font-semibold rounded-lg transition-all text-[#aeaeb2]';
-                }
-            }
-        }
-
-        function switchResultDay(day) {
-            setTargetDay(day);
-            if (cachedForecastData) {
-                renderForecastView(cachedForecastData[day]);
             }
         }
 
@@ -498,10 +456,7 @@
 
         function renderLocations() {
             const listEl = document.getElementById('locationList');
-            const countEl = document.getElementById('locationCount');
             if (!listEl) return;
-
-            if (countEl) countEl.innerText = `${locations.length}件登録中`;
 
             listEl.innerHTML = '';
             locations.forEach((loc) => {
@@ -918,7 +873,7 @@
                 `;
             }
 
-            if (criteriaBadge) criteriaBadge.innerText = `基準：${outfit.label}`;
+            if (criteriaBadge) criteriaBadge.innerText = outfit.label;
             if (outfitSec) {
                 outfitSec.innerHTML = `
                     <div class="bg-[#1c1c1e]/90 rounded-xl p-2.5 border border-[#ff9500]/30 shadow-sm">
