@@ -48,6 +48,12 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* 最小フォントサイズ12px保証 */
+        html, body {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-black flex flex-col justify-between p-4 safe-area-top safe-area-bottom selection:bg-orange-500 selection:text-white">
@@ -213,7 +219,7 @@
                     <div class="bg-[#1c1c1e]/80 rounded-xl p-2.5 border border-[#3a3a3c] space-y-1.5 mt-2">
                         <div class="text-[12px] font-bold text-[#8e8e93] flex items-center justify-between">
                             <span>🕒 朝・昼・夜の寒暖差対策</span>
-                            <span class="text-[11px] font-normal text-[#636366]">気温推移目安</span>
+                            <span class="text-[12px] font-normal text-[#636366]">気温推移目安</span>
                         </div>
                         <div id="timeTimeline" class="grid grid-cols-3 gap-1.5 text-center text-[12px]">
                             <!-- JavaScriptで動的生成 -->
@@ -374,7 +380,7 @@
             '那覇':   { code: '471000', lat: 26.2124, lon: 127.6809 }
         };
 
-        // 指定された手持ち服リスト＆体感温度による厳格な判定基準
+        // 指定された手持ち服リスト＆体感温度による厳格な判定基準（変更完全禁止）
         function evaluateClothingByCriteria(apparentTemp) {
             let label = '';
             let jacket = '';
@@ -973,19 +979,19 @@
             if (timeTimeline) {
                 timeTimeline.innerHTML = `
                     <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
-                        <div class="text-[#8e8e93] text-[11px]">朝 (8時)</div>
+                        <div class="text-[#8e8e93] text-[12px]">朝 (8時)</div>
                         <div class="font-bold text-white font-mono text-[13px]">${morningTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[10px] mt-0.5">${morningTemp <= 15 ? '羽織り推奨' : '快適'}</div>
+                        <div class="text-[#aeaeb2] text-[12px] mt-0.5">${morningTemp <= 15 ? '羽織り推奨' : '快適'}</div>
                     </div>
                     <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
-                        <div class="text-[#8e8e93] text-[11px]">昼 (14時)</div>
+                        <div class="text-[#8e8e93] text-[12px]">昼 (14時)</div>
                         <div class="font-bold text-orange-400 font-mono text-[13px]">${noonTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[10px] mt-0.5">${noonTemp >= 22 ? '上着不要' : '適温'}</div>
+                        <div class="text-[#aeaeb2] text-[12px] mt-0.5">${noonTemp >= 22 ? '上着不要' : '適温'}</div>
                     </div>
                     <div class="bg-[#2c2c2e]/60 rounded-lg p-1.5 border border-[#3a3a3c]">
-                        <div class="text-[#8e8e93] text-[11px]">夜 (20時)</div>
+                        <div class="text-[#8e8e93] text-[12px]">夜 (20時)</div>
                         <div class="font-bold text-[#64d2ff] font-mono text-[13px]">${nightTemp}℃</div>
-                        <div class="text-[#aeaeb2] text-[10px] mt-0.5">${nightTemp <= 14 ? '冷え込み注意' : '過ごしやすい'}</div>
+                        <div class="text-[#aeaeb2] text-[12px] mt-0.5">${nightTemp <= 14 ? '冷え込み注意' : '過ごしやすい'}</div>
                     </div>
                 `;
             }
