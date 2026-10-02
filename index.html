@@ -55,6 +55,23 @@
             text-size-adjust: 100%;
             font-size: 14px;
         }
+
+        /* Pull-to-Refresh インジケーター用のスタイル */
+        #ptrContainer {
+            overflow: hidden;
+            height: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: height 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: height;
+        }
+        #ptrContainer.ptr-dragging {
+            transition: none; /* ドラッグ中はリアルタイム追従 */
+        }
+        .ptr-icon-spin {
+            animation: spin 0.75s linear infinite;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-black flex flex-col justify-between p-4 safe-area-top safe-area-bottom selection:bg-orange-500 selection:text-white text-[14px]">
@@ -136,7 +153,7 @@
             <button 
                 type="button"
                 id="checkBtn" 
-                onclick="getRecommendation()" 
+                onclick="getRecommendation(false)" 
                 class="ios-btn w-full bg-gradient-to-r from-[#ff9500] to-[#ff5e3a] hover:brightness-110 text-white font-semibold text-[16px] h-12 rounded-xl shadow-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer touch-manipulation">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
@@ -156,7 +173,7 @@
         <!-- Fullscreen Result View -->
         <div id="resultBox" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col safe-area-top safe-area-bottom">
             <!-- Navigation Bar with Back Button & Overview Button -->
-            <div class="flex items-center justify-between px-4 py-2.5 border-b border-[#2c2c2e] bg-[#1c1c1e]/80 backdrop-blur-md">
+            <div class="flex items-center justify-between px-4 py-2.5 border-b border-[#2c2c2e] bg-[#1c1c1e]/80 backdrop-blur-md shrink-0">
                 <button type="button" onclick="closeResult()" class="ios-btn flex items-center gap-1 text-[#ff9500] font-semibold text-[16px] py-1 px-1 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
@@ -165,14 +182,28 @@
                 </button>
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="toggleOverviewModal(true)" class="ios-btn bg-[#2c2c2e] hover:bg-[#3a3a3c] text-[#aeaeb2] hover:text-white text-[14px] px-2.5 py-1 rounded-lg border border-[#3a3a3c] flex items-center gap-1 transition-all">
-                        <span>📜 概況</span>
+                        <span>📅 週間</span>
                     </button>
                     <span id="resultLocationBadge" class="text-[14px] bg-[#2c2c2e] text-white border border-[#3a3a3c] px-3 py-1 rounded-full font-medium">東京都品川区</span>
                 </div>
             </div>
 
-            <!-- Scrollable Content Area -->
-            <div id="resultScrollContainer" class="flex-1 overflow-y-auto px-3.5 py-2.5 space-y-2.5 max-w-sm w-full mx-auto">
+            <!-- Scrollable Content Area with Pull To Refresh support -->
+            <div id="resultScrollContainer" class="flex-1 overflow-y-auto px-3.5 py-1 space-y-2.5 max-w-sm w-full mx-auto overscroll-y-contain">
+                
+                <!-- Pull-To-Refresh Indicator Block -->
+                <div id="ptrContainer" class="w-full">
+                    <div class="flex items-center justify-center gap-2 py-2 text-[#8e8e93] text-[13px] font-medium">
+                        <div id="ptrIcon" class="transition-transform duration-200">
+                            <!-- スワイプ矢印アイコン -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                            </svg>
+                        </div>
+                        <span id="ptrText">下に引いて最新情報を更新</span>
+                    </div>
+                </div>
+
                 <!-- In-Result Day Switcher -->
                 <div class="grid grid-cols-2 gap-1 bg-[#2c2c2e]/80 p-1 rounded-xl border border-[#3a3a3c]">
                     <button 
@@ -247,18 +278,41 @@
 
         <!-- JMA Overview Popup Modal -->
         <div id="overviewModal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5">
-            <div class="bg-[#1c1c1e] border border-[#2c2c2e] rounded-2xl p-4 w-full max-w-sm shadow-2xl space-y-2.5 flex flex-col max-h-[80vh]">
-                <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-2">
+            <div class="bg-[#1c1c1e] border border-[#2c2c2e] rounded-2xl p-4 w-full max-w-sm shadow-2xl space-y-3 flex flex-col max-h-[85vh]">
+                <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-2 shrink-0">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-base">📜</span>
-                        <h3 id="jmaOverviewTitle" class="text-[15px] font-bold text-white">気象庁 天気概況</h3>
+                        <span class="text-base">📅</span>
+                        <h3 id="jmaOverviewTitle" class="text-[15px] font-bold text-white">気象庁 週間天気予報</h3>
                     </div>
-                    <span id="jmaReportTimeBadge" class="text-[14px] text-[#8e8e93] font-mono">--:-- 発表</span>
+                    <span id="jmaReportTimeBadge" class="text-[13px] text-[#8e8e93] font-mono">--:-- 発表</span>
                 </div>
-                <div id="jmaOverviewText" class="text-[14px] text-[#d1d1d6] leading-relaxed whitespace-pre-wrap overflow-y-auto pr-1 py-1 max-h-[50vh]">
-                    気象概況を取得中...
+
+                <!-- 4日間の週間天気予報カード（気象庁公式データ最優先） -->
+                <div class="shrink-0 space-y-1.5">
+                    <div class="text-[13px] font-semibold text-[#ff9500] flex items-center justify-between">
+                        <span class="flex items-center gap-1">
+                            <span>🌤</span>
+                            <span>直近4日間の週間予報</span>
+                        </span>
+                        <span class="text-[11px] text-[#8e8e93] font-normal">気象庁公式発表連動</span>
+                    </div>
+                    <div id="weeklyForecastGrid" class="grid grid-cols-4 gap-1.5">
+                        <!-- JavaScriptで動的生成 -->
+                    </div>
                 </div>
-                <div class="pt-1">
+
+                <!-- 気象概況セクション -->
+                <div class="flex-1 overflow-hidden flex flex-col min-h-0 pt-1 border-t border-[#2c2c2e]">
+                    <div class="text-[13px] font-semibold text-[#aeaeb2] mb-1 flex items-center gap-1">
+                        <span>📜</span>
+                        <span>気象庁 天気概況</span>
+                    </div>
+                    <div id="jmaOverviewText" class="text-[14px] text-[#d1d1d6] leading-relaxed whitespace-pre-wrap overflow-y-auto pr-1 py-1 flex-1">
+                        気象概況を取得中...
+                    </div>
+                </div>
+
+                <div class="pt-1 shrink-0">
                     <button type="button" onclick="toggleOverviewModal(false)" class="ios-btn w-full bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white font-medium text-[14px] py-2 rounded-xl border border-[#3a3a3c]">
                         閉じる
                     </button>
@@ -301,6 +355,8 @@
     <footer class="text-center py-2">
         <p class="text-[14px] text-[#636366]">気象庁公式データ ＆ Open-Meteo連携</p>
     </footer>
+
+    <!-- Scripts omitted for space, included directly below... -->
 
     <script>
         const STORAGE_KEY_LIST = 'weather_checker_saved_locations_list';
@@ -384,7 +440,6 @@
             '那覇':   { code: '471000', lat: 26.2124, lon: 127.6809 }
         };
 
-        // 指定された手持ち服リスト＆体感温度による厳格な判定基準（変更完全禁止）
         function evaluateClothingByCriteria(apparentTemp) {
             let label = '';
             let jacket = '';
@@ -423,6 +478,7 @@
         let activeLocation = '東京都品川区';
         let selectedDay = 'tomorrow'; // 'today' | 'tomorrow'
         let cachedForecastData = null; // 今日・明日のデータを保持して即時切り替え
+        let isRefreshing = false; // 二重更新ガード
 
         function setTargetDay(day) {
             selectedDay = day;
@@ -477,6 +533,7 @@
             loadLocations();
             renderLocations();
             updateTabStyles();
+            initPullToRefresh();
             const savedApiKey = localStorage.getItem(STORAGE_KEY_API_KEY);
             const keyInput = document.getElementById('userApiKey');
             if (savedApiKey && keyInput) {
@@ -673,7 +730,109 @@
             return `${y}-${m}-${d}`;
         }
 
-        async function getRecommendation() {
+        function initPullToRefresh() {
+            const scrollContainer = document.getElementById('resultScrollContainer');
+            const ptrContainer = document.getElementById('ptrContainer');
+            const ptrIcon = document.getElementById('ptrIcon');
+            const ptrText = document.getElementById('ptrText');
+
+            if (!scrollContainer || !ptrContainer) return;
+
+            let startY = 0;
+            let currentPullDistance = 0;
+            let isDragging = false;
+            const PULL_THRESHOLD = 60; // リフレッシュ発火しきい値(px)
+            const MAX_PULL = 90; // 最大引っ張り距離(px)
+
+            // タッチ開始
+            scrollContainer.addEventListener('touchstart', (e) => {
+                if (isRefreshing) return;
+                // コンテナが最上部にある時のみPullを開始可能
+                if (scrollContainer.scrollTop <= 0) {
+                    startY = e.touches[0].clientY;
+                    isDragging = true;
+                    ptrContainer.classList.add('ptr-dragging');
+                }
+            }, { passive: true });
+
+            // タッチ移動（スワイプ中）
+            scrollContainer.addEventListener('touchmove', (e) => {
+                if (!isDragging || isRefreshing) return;
+
+                const currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+
+                // 下方向へのスワイプ
+                if (diff > 0 && scrollContainer.scrollTop <= 0) {
+                    // スクロールを阻害しないためのダンピング計算
+                    currentPullDistance = Math.min(diff * 0.45, MAX_PULL);
+                    ptrContainer.style.height = `${currentPullDistance}px`;
+
+                    if (currentPullDistance >= PULL_THRESHOLD) {
+                        ptrText.innerText = '指を離して更新';
+                        ptrIcon.style.transform = 'rotate(180deg)';
+                    } else {
+                        ptrText.innerText = '下に引いて最新情報を更新';
+                        ptrIcon.style.transform = 'rotate(0deg)';
+                    }
+                } else {
+                    currentPullDistance = 0;
+                    ptrContainer.style.height = '0px';
+                }
+            }, { passive: true });
+
+            // タッチ終了
+            const handleTouchEnd = async () => {
+                if (!isDragging) return;
+                isDragging = false;
+                ptrContainer.classList.remove('ptr-dragging');
+
+                if (currentPullDistance >= PULL_THRESHOLD && !isRefreshing) {
+                    // スワイプ完了：リフレッシュ発火
+                    isRefreshing = true;
+                    ptrContainer.style.height = '48px';
+                    ptrIcon.style.transform = 'rotate(0deg)';
+                    ptrIcon.innerHTML = `
+                        <div class="ios-loader w-4 h-4 border-2"></div>
+                    `;
+                    ptrText.innerText = '最新データを更新中...';
+
+                    try {
+                        await getRecommendation(true); // isPullRefresh = true
+                        ptrText.innerText = '更新完了';
+                    } catch (err) {
+                        ptrText.innerText = '更新失敗';
+                    } finally {
+                        setTimeout(() => {
+                            resetPtrUI();
+                            isRefreshing = false;
+                        }, 500);
+                    }
+                } else {
+                    // しきい値未満の場合は元に戻す
+                    resetPtrUI();
+                }
+                currentPullDistance = 0;
+            };
+
+            scrollContainer.addEventListener('touchend', handleTouchEnd);
+            scrollContainer.addEventListener('touchcancel', handleTouchEnd);
+
+            function resetPtrUI() {
+                ptrContainer.style.height = '0px';
+                setTimeout(() => {
+                    ptrIcon.className = 'transition-transform duration-200';
+                    ptrIcon.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
+                    `;
+                    ptrText.innerText = '下に引いて最新情報を更新';
+                }, 250);
+            }
+        }
+
+        async function getRecommendation(isPullRefresh = false) {
             const btn = document.getElementById('checkBtn');
             const loading = document.getElementById('loading');
             const resultBox = document.getElementById('resultBox');
@@ -688,11 +847,14 @@
 
             if (resultBadge) resultBadge.innerText = targetLocation;
 
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'pointer-events-none');
-            loading.classList.remove('hidden');
-            resultBox.classList.add('hidden');
-            errorBox.classList.add('hidden');
+            // 通常の画面遷移ボタンの場合のみ全画面ローディング
+            if (!isPullRefresh) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'pointer-events-none');
+                loading.classList.remove('hidden');
+                resultBox.classList.add('hidden');
+                errorBox.classList.add('hidden');
+            }
 
             try {
                 const areaInfo = resolveAreaAndCoords(targetLocation);
@@ -702,9 +864,11 @@
                 const todayStr = getTodayDateString();
                 const tomorrowStr = getTomorrowDateString();
 
-                const jmaForecastUrl = `https://www.jma.go.jp/bosai/forecast/data/forecast/${areaCode}.json`;
-                const jmaOverviewUrl = `https://www.jma.go.jp/bosai/forecast/data/overview_forecast/${areaCode}.json`;
-                const meteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=apparent_temperature_max,apparent_temperature_min,temperature_2m_max,temperature_2m_min,windspeed_10m_max,precipitation_probability_max&hourly=temperature_2m,apparent_temperature&timezone=Asia%2FTokyo&forecast_days=4`;
+                // キャッシュ回避のタイムスタンプを追加
+                const cacheBuster = `&_t=${Date.now()}`;
+                const jmaForecastUrl = `https://www.jma.go.jp/bosai/forecast/data/forecast/${areaCode}.json?_t=${Date.now()}`;
+                const jmaOverviewUrl = `https://www.jma.go.jp/bosai/forecast/data/overview_forecast/${areaCode}.json?_t=${Date.now()}`;
+                const meteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=weathercode,apparent_temperature_max,apparent_temperature_min,temperature_2m_max,temperature_2m_min,windspeed_10m_max,precipitation_probability_max&hourly=temperature_2m,apparent_temperature&timezone=Asia%2FTokyo&forecast_days=7${cacheBuster}`;
 
                 const [jmaForecastRes, jmaOverviewRes, meteoRes] = await Promise.all([
                     fetch(jmaForecastUrl).catch(() => null),
@@ -730,7 +894,7 @@
                     }
                 }
 
-                if (jmaOverviewTitle) jmaOverviewTitle.innerText = `天気概況（${overviewTarget || targetLocation}）`;
+                if (jmaOverviewTitle) jmaOverviewTitle.innerText = `週間予報（${overviewTarget || targetLocation}）`;
                 if (jmaReportTimeBadge) jmaReportTimeBadge.innerText = overviewReportTime || '公式発表';
                 if (jmaOverviewText) jmaOverviewText.innerText = overviewBody;
 
@@ -743,6 +907,9 @@
                 if (meteoRes && meteoRes.ok) {
                     meteoData = await meteoRes.json();
                 }
+
+                // 4日間の週間予報カードを描画
+                renderWeeklyCards(meteoData, jmaData);
 
                 // 今日と明日の予報オブジェクトを作成
                 const parseDayData = (dateStr, fallbackIdx, labelPrefix) => {
@@ -891,17 +1058,23 @@
                 // 選択されている日の予報を描画
                 updateTabStyles();
                 renderForecastView(cachedForecastData[selectedDay]);
-                if (resultScroll) resultScroll.scrollTop = 0;
+
+                if (!isPullRefresh && resultScroll) {
+                    resultScroll.scrollTop = 0;
+                }
                 resultBox.classList.remove('hidden');
 
             } catch (err) {
                 console.error("Forecast Error:", err);
                 errorBox.innerText = `データ取得中にエラーが発生しました: ${err.message}`;
                 errorBox.classList.remove('hidden');
+                throw err;
             } finally {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'pointer-events-none');
-                loading.classList.add('hidden');
+                if (!isPullRefresh) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'pointer-events-none');
+                    loading.classList.add('hidden');
+                }
             }
         }
 
@@ -938,7 +1111,7 @@
 
             const popDisplay = popList.length > 0 ? popList.join(' / ') : '--%';
 
-            // 2枚目の画像にある各項目結果のフォントサイズを1ポイント大きく（14px → 15px）設定
+            // 結果テーブル
             if (forecastSec) {
                 forecastSec.innerHTML = `
                     <div class="flex justify-between py-1 border-b border-[#2c2c2e]/60 items-center">
@@ -978,7 +1151,7 @@
                 `;
             }
 
-            // 朝・昼・夜の気温タイムライン表示（結果の気温とアドバイスを1ポイント拡大）
+            // 朝・昼・夜の気温タイムライン表示
             if (timeTimeline) {
                 timeTimeline.innerHTML = `
                     <div class="bg-[#2c2c2e]/70 rounded-xl px-1 py-2 border border-[#3a3a3c] flex flex-col items-center justify-between min-h-[96px] overflow-hidden">
@@ -1019,8 +1192,194 @@
                 accessoryAdvice.innerHTML = advice.join('<br>');
             }
         }
+
+        // 気象庁の公式天気コード（JMA weather codes / TELOPS）から絵文字アイコンを判定
+        function getJmaWeatherEmoji(code) {
+            if (!code) return '🌤';
+            const strCode = String(code);
+
+            // 晴れ系 (100番台)
+            if (strCode.startsWith('1')) {
+                if (['102', '103', '106', '112', '113', '114'].includes(strCode)) return '🌦'; // 晴れ一時雨/のち雨
+                if (['104', '105', '115', '116', '117'].includes(strCode)) return '🌨'; // 晴れ一時雪/のち雪
+                if (['101', '110', '111'].includes(strCode)) return '🌤'; // 晴れ時々曇り
+                return '☀️'; // 快晴・晴れ
+            }
+
+            // 曇り系 (200番台)
+            if (strCode.startsWith('2')) {
+                if (['202', '203', '206', '212', '213', '214'].includes(strCode)) return '🌧️'; // 曇り一時雨/のち雨
+                if (['204', '205', '215', '216', '217'].includes(strCode)) return '❄️'; // 曇り一時雪/のち雪
+                if (['201', '210', '211'].includes(strCode)) return '⛅'; // 曇り時々晴れ
+                return '☁️'; // 曇り
+            }
+
+            // 雨系 (300番台)
+            if (strCode.startsWith('3')) {
+                if (['303', '309', '313', '314', '315'].includes(strCode)) return '🌨️'; // 雨と雪
+                if (['300', '301', '302', '311'].includes(strCode)) return '🌧️'; // 雨
+                return '🌧️';
+            }
+
+            // 雪系 (400番台)
+            if (strCode.startsWith('4')) {
+                return '❄️';
+            }
+
+            return '🌤';
+        }
+
+        // 天気コードから絵文字アイコンを判定するヘルパー（Open-Meteo用フォールバック）
+        function getWeatherEmojiByCode(code) {
+            if (code === undefined || code === null) return '☀️';
+            if (code === 0) return '☀️'; // 快晴
+            if (code === 1 || code === 2) return '🌤'; // 晴れ時々曇り
+            if (code === 3) return '☁️'; // 曇り
+            if ([45, 48].includes(code)) return '🌫️'; // 霧
+            if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️'; // 雨
+            if ([71, 73, 75, 77, 85, 86].includes(code)) return '❄️'; // 雪
+            if ([95, 96, 99].includes(code)) return '⛈️'; // 雷雨
+            return '🌤';
+        }
+
+        // 4日間の週間予報カードを描画（気象庁公式データを最優先で採用）
+        function renderWeeklyCards(meteoData, jmaData) {
+            const grid = document.getElementById('weeklyForecastGrid');
+            if (!grid) return;
+
+            // 気象庁の週間予報データ（jmaData[1]）から抽出
+            const jmaWeekSeries = Array.isArray(jmaData) && jmaData.length > 1 ? jmaData[1]?.timeSeries : null;
+            const jmaWeatherArea = jmaWeekSeries?.[0]?.areas?.[0];
+            const jmaWeatherTimes = jmaWeekSeries?.[0]?.timeDefines || [];
+            const jmaTempArea = jmaWeekSeries?.[1]?.areas?.[0];
+            const jmaTempTimes = jmaWeekSeries?.[1]?.timeDefines || [];
+
+            // 短期予報データ（jmaData[0]：明日・明後日等の詳細値）
+            const jmaShortSeries = Array.isArray(jmaData) && jmaData.length > 0 ? jmaData[0]?.timeSeries : null;
+            const jmaShortWeatherArea = jmaShortSeries?.[0]?.areas?.[0];
+            const jmaShortWeatherTimes = jmaShortSeries?.[0]?.timeDefines || [];
+
+            const meteoDaily = meteoData?.daily;
+            const tomorrowStr = getTomorrowDateString();
+
+            // 明日から4日分の日付配列（YYYY-MM-DD）を生成
+            const targetDates = [];
+            const baseTime = new Date(tomorrowStr + 'T00:00:00');
+            for (let i = 0; i < 4; i++) {
+                const target = new Date(baseTime.getTime() + i * 24 * 60 * 60 * 1000);
+                const y = target.getFullYear();
+                const m = String(target.getMonth() + 1).padStart(2, '0');
+                const d = String(target.getDate()).padStart(2, '0');
+                targetDates.push(`${y}-${m}-${d}`);
+            }
+
+            const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+
+            const cardsHtml = targetDates.map((dateStr) => {
+                const d = new Date(dateStr + 'T00:00:00');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const date = String(d.getDate()).padStart(2, '0');
+                const dayIndex = d.getDay();
+                const dayText = dayNames[dayIndex];
+
+                // 曜日ごとのカラー（土曜=青、日曜=赤、平日=白）
+                let dayColorClass = 'text-white';
+                if (dayIndex === 6) {
+                    dayColorClass = 'text-[#0a84ff]';
+                } else if (dayIndex === 0) {
+                    dayColorClass = 'text-[#ff453a]';
+                }
+
+                // 1. 気象庁のデータから該当日のインデックスを検索
+                let weatherEmoji = null;
+                let maxT = null;
+                let minT = null;
+                let pop = null;
+
+                // 気象庁 週間天気・降水確率のインデックス検索
+                const jmaWIdx = jmaWeatherTimes.findIndex(t => t.startsWith(dateStr));
+                if (jmaWIdx !== -1 && jmaWeatherArea) {
+                    const weatherCode = jmaWeatherArea.weatherCodes?.[jmaWIdx];
+                    if (weatherCode) {
+                        weatherEmoji = getJmaWeatherEmoji(weatherCode);
+                    }
+                    if (jmaWeatherArea.pops?.[jmaWIdx] !== undefined && jmaWeatherArea.pops[jmaWIdx] !== '') {
+                        pop = parseInt(jmaWeatherArea.pops[jmaWIdx], 10);
+                    }
+                }
+
+                // 気象庁 短期予報（明日分など）にデータがあれば優先的に補完
+                const jmaSIdx = jmaShortWeatherTimes.findIndex(t => t.startsWith(dateStr));
+                if (jmaSIdx !== -1 && jmaShortWeatherArea) {
+                    const shortCode = jmaShortWeatherArea.weatherCodes?.[jmaSIdx];
+                    if (shortCode && !weatherEmoji) {
+                        weatherEmoji = getJmaWeatherEmoji(shortCode);
+                    }
+                }
+
+                // 気象庁 週間気温のインデックス検索
+                const jmaTIdx = jmaTempTimes.findIndex(t => t.startsWith(dateStr));
+                if (jmaTIdx !== -1 && jmaTempArea) {
+                    if (jmaTempArea.tempsMax?.[jmaTIdx] !== undefined && jmaTempArea.tempsMax[jmaTIdx] !== '') {
+                        maxT = parseInt(jmaTempArea.tempsMax[jmaTIdx], 10);
+                    }
+                    if (jmaTempArea.tempsMin?.[jmaTIdx] !== undefined && jmaTempArea.tempsMin[jmaTIdx] !== '') {
+                        minT = parseInt(jmaTempArea.tempsMin[jmaTIdx], 10);
+                    }
+                }
+
+                // 2. Open-Meteo データ（気象庁に項目がない「風速」と、万が一の欠損補完用）
+                let windSpeedMs = 2;
+                if (meteoDaily && Array.isArray(meteoDaily.time)) {
+                    const mIdx = meteoDaily.time.indexOf(dateStr);
+                    if (mIdx !== -1) {
+                        // 風速（気象庁の週間予報には風速数値がないため、予報モデルから取得）
+                        const windKmh = meteoDaily.windspeed_10m_max?.[mIdx] || 0;
+                        windSpeedMs = Math.round(windKmh / 3.6);
+
+                        // 気象庁データが未発表または欠落している場合のみフォールバック
+                        if (maxT === null && meteoDaily.temperature_2m_max?.[mIdx] !== undefined) {
+                            maxT = Math.round(meteoDaily.temperature_2m_max[mIdx]);
+                        }
+                        if (minT === null && meteoDaily.temperature_2m_min?.[mIdx] !== undefined) {
+                            minT = Math.round(meteoDaily.temperature_2m_min[mIdx]);
+                        }
+                        if (pop === null && meteoDaily.precipitation_probability_max?.[mIdx] !== undefined) {
+                            pop = meteoDaily.precipitation_probability_max[mIdx];
+                        }
+                        if (!weatherEmoji && meteoDaily.weathercode?.[mIdx] !== undefined) {
+                            weatherEmoji = getWeatherEmojiByCode(meteoDaily.weathercode[mIdx]);
+                        }
+                    }
+                }
+
+                const displayMax = maxT !== null ? `${maxT}℃` : '--';
+                const displayMin = minT !== null ? `${minT}℃` : '--';
+                const displayPop = pop !== null ? `${pop}%` : '--%';
+                const displayEmoji = weatherEmoji || '🌤';
+
+                return `
+                    <div class="bg-[#242426] border border-[#38383a] rounded-xl p-1.5 flex flex-col items-center justify-between text-center shadow-md">
+                        <div class="text-[12px] text-[#aeaeb2] font-mono leading-none pt-0.5">${month}/${date}</div>
+                        <div class="text-[13px] font-bold ${dayColorClass} leading-tight mb-0.5">(${dayText})</div>
+                        <div class="text-[22px] my-0.5 leading-none select-none">${displayEmoji}</div>
+                        <div class="flex items-center justify-center gap-1 text-[12px] font-mono font-bold leading-tight mt-0.5 whitespace-nowrap">
+                            <span class="text-[#ff9500]">${displayMax}</span>
+                            <span class="text-[#64d2ff]">${displayMin}</span>
+                        </div>
+                        <div class="text-[11px] text-[#64d2ff] font-medium leading-tight mt-1 flex items-center justify-center gap-0.5">
+                            <span>💧</span><span>${displayPop}</span>
+                        </div>
+                        <div class="text-[11px] text-[#aeaeb2] font-medium leading-tight mt-0.5 flex items-center justify-center gap-0.5">
+                            <span>💨</span><span>${windSpeedMs}m/s</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            grid.innerHTML = cardsHtml;
+        }
     </script>
-    <!-- Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
